@@ -23,7 +23,7 @@ class Converter
         elsif @number.size == 64    # 64-bit倍精度浮動小数点規格
             puts("64-bit mode")
             @bit = 64
-            @bias = 1083
+            @bias = 1023
         elsif @number.size == 128   # 128-bit4倍精度浮動小数点規格
             puts("128-bit mode")
             @bit = 128
@@ -84,11 +84,11 @@ class Converter
     end
 
     def parse(source)
-        sum = 1                             # IEEE754では仮数部は元の仮数のうち1は確定として記憶しないのでsumは0ではなく1にしておく
-        array = source.split(//)            # 空っぽの正規表現で分割 = 1文字ずつ分割して配列に格納
+        sum = 1                                 # IEEE754では仮数部は元の仮数のうち1は確定として記憶しないのでsumは0ではなく1にしておく
+        array = source.split(//)                # 空っぽの正規表現で分割 = 1文字ずつ分割して配列に格納
         array.each_with_index do |num,i|
-            divisor = 2**(i+1)
-            sum += num.to_f / divisor       # 大きいほうから順番に評価。小数点の2進数→10進数変換をプログラムで実装
+            divisor = (BigInt.new(2))**(i+1)    # BigInt型を用いて算術オーバーフローを回避
+            sum += num.to_f / divisor           # 大きいほうから順番に評価。小数点の2進数→10進数変換をプログラムで実装
         end
         sum
     end
