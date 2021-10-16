@@ -12,7 +12,11 @@ class Converter
         @bit = 0
         @bias = 0
 
-        if @number.size == 32       # 32-bit単精度浮動小数点規格
+        if @number.size == 16       # 16-bit半精度浮動小数点規格
+            puts("16-bit mode")
+            @bit = 16
+            @bias = 15
+        elsif @number.size == 32    # 32-bit単精度浮動小数点規格
             puts("32-bit mode")
             @bit = 32
             @bias = 127
@@ -33,7 +37,13 @@ class Converter
     # @numberを符号、指数部、仮数部に分割
     def split()
         ieee = ""
-        if @bit == 32       # 32-bit単精度浮動小数点規格
+        if @bit == 16       # 16-bit半精度浮動小数点規格
+            if ieee = /([0-9]{1})([0-9]{5})([0-9]{10})/.match(@number)  # コンストラクタの構成上きちんとtrueに振れるはず
+            else
+                puts("ERROR. Numerical analysis failed. Check the number.")
+                Process.exit(0)
+            end
+        elsif @bit == 32    # 32-bit単精度浮動小数点規格
             if ieee = /([0-9]{1})([0-9]{8})([0-9]{23})/.match(@number)  # コンストラクタの構成上きちんとtrueに振れるはず
             else
                 puts("ERROR. Numerical analysis failed. Check the number.")
@@ -77,7 +87,7 @@ class Converter
         sum = 1                             # IEEE754では仮数部は元の仮数のうち1は確定として記憶しないのでsumは0ではなく1にしておく
         array = source.split(//)            # 空っぽの正規表現で分割 = 1文字ずつ分割して配列に格納
         array.each_with_index do |num,i|
-            divisor = (BigInt.new(2))**(i+1)
+            divisor = 2**(i+1)
             sum += num.to_f / divisor       # 大きいほうから順番に評価。小数点の2進数→10進数変換をプログラムで実装
         end
         sum
