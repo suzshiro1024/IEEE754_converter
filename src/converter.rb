@@ -65,10 +65,8 @@ class Converter
     # 指数部の復元
     def convertExponent()
         source = split()
-
         exponent_b = source[2].to_i(2) - @bias  # 指数部を10進数表現の指数値に変換する
         exponent_d = 2.0 ** exponent_b          # 指数部nに対し2のn乗で表現されているのでその形で復元
-        puts exponent_d
         exponent_d
     end
 
